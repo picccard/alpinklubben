@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="content-section">
+
+    <legend class="border-bottom">{{ title }}</legend>
+    <!-- for each heiskort-variant (måned, uke, dags) -->
+
+    {% if skipakker %}
+    {% for skipakke in skipakker %}
+    {% if loop.index0 % 3 == 0 %}
+    <div class="card-group">
+        {% endif %}
+        <div class="card mb-3 ">
+            <div class="card-header">
+                {{ skipakke.name }}
+            </div>
+            <img class="card-img-top" src="{{ url_for('static', filename=('imgs/')+skipakke.image) }}" alt="Skipakke bilde">
+            <div class="card-body">
+                <h5 class="card-title">{{ skipakke.name }}</h5>
+                <p class="card-text">{{ skipakke.desc }}</p>
+                <p>Leiepriser:</p>
+                <ul>
+                    <li>Time: {{ skipakke.hour_price }}kr</li>
+                    <li>Dag: {{ skipakke.day_price }}kr</li>
+                    <li>Uke: {{ skipakke.week_price }}kr</li>
+                </ul>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">
+                    <a href="{{ url_for('order_skipakker', id=skipakke.id) }}" class="btn btn-md btn-dark">Bestill</a>
+                </small>
+            </div>
+        </div>
+        {% if loop.index0 % 3 == 2 or loop.last %}
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+
+
+</div>
+{% endblock content %}
+{% block sidebar2 %}
+<div class="content-section">
+    <h2>Notes:</h2>
+    Ulike pakker kan ha egene bilder
+</div>
+{% endblock sidebar2 %}

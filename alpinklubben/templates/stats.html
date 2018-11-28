@@ -1,0 +1,129 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="content-section">
+    <legend class="border-bottom">Stats</legend>
+    <canvas id="heiskortChartCanvas"></canvas>
+    <div class="row mt-2">
+        <button class="btn btn-md btn-secondary" id="changeCircleSize">Endre visning</button>
+        <button class="btn btn-md btn-secondary ml-2" id="chartByNoGroups">Ikke grupper</button>
+        <button class="btn btn-md btn-secondary ml-2" id="chartByAge">Grupper på alder</button>
+        <button class="btn btn-md btn-secondary ml-2" id="chartByType">Grupper på type</button>
+    </div>
+</div>
+{% endblock content %}
+{% block sidebar2 %}
+<div class="content-section">
+    <p>Kan legge inn annen type statistikk i forskjellige diagrammer.</p>
+</div>
+{% endblock sidebar2 %}
+{% block scripts %}
+<script type="text/javascript" src="{{ url_for('static', filename='Chart.min.js') }}"></script>
+<script type="text/javascript">
+    // chart data
+    console.log("start");
+
+    let heiskort_labels = [{% for item in heiskort_type %}"{{ item }}",{% endfor %}]
+    let heiskort_count = [{% for item in heiskort_sold %}{{ item }},{% endfor %}]
+
+    var heiskortSoldData = {
+        labels: heiskort_labels,
+        datasets: [{
+            label: "Heiskort solgt",
+            data: heiskort_count,
+            backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"]
+        }]
+    }
+
+    let canvas01 = document.getElementById('heiskortChartCanvas');
+
+    var heiskortChart = new Chart(canvas01, {
+        type: 'doughnut',
+        data: heiskortSoldData
+    });
+
+    document.getElementById('changeCircleSize').addEventListener('click', function() {
+			if (heiskortChart.options.circumference === Math.PI) {
+				heiskortChart.options.circumference = 2 * Math.PI;
+				heiskortChart.options.rotation = -Math.PI / 2;
+			} else {
+				heiskortChart.options.circumference = Math.PI;
+				heiskortChart.options.rotation = -Math.PI;
+			}
+
+			heiskortChart.update();
+		});
+
+    document.getElementById('chartByNoGroups').addEventListener('click', endreTilNullGrupper);
+
+    document.getElementById('chartByAge').addEventListener('click', endreTilKortAge);
+
+    document.getElementById('chartByType').addEventListener('click', endreTilKortType);
+
+    function endreTilKortAge() {
+        voksen_barn_count = [0, 0];
+        voksen_barn_labels = ['Voksen', 'Barn'];
+
+        for (let i=0;i<heiskort_labels.length;i++) {
+            if (heiskort_labels[i].toLowerCase().includes("voksen")) {
+                voksen_barn_count[0] += heiskort_count[i];
+            } else if (heiskort_labels[i].toLowerCase().includes("barn")) {
+                voksen_barn_count[1] += heiskort_count[i];
+            } else {
+                console.log('ikke barn eller voksen');
+            }
+        }
+
+        new_data_set = {
+            label: "Heiskort solgt",
+            data: voksen_barn_count,
+            backgroundColor: ["#ff0000", "#0000ff"]
+        };
+        heiskortChart.data.labels = voksen_barn_labels;
+        heiskortChart.data.datasets = [];
+        heiskortChart.data.datasets[0] = new_data_set;
+        heiskortChart.update();
+        return new_data_set;
+    };
+
+    function endreTilKortType() {
+        card_type_count = [0, 0, 0];
+        card_type_labels = ['Dagskort', 'Ukeskort', 'Sesongkort'];
+
+        for (let i=0;i<heiskort_labels.length;i++) {
+            if (heiskort_labels[i].toLowerCase().includes("dagskort")) {
+                card_type_count[0] += heiskort_count[i];
+            } else if (heiskort_labels[i].toLowerCase().includes("ukeskort")) {
+                card_type_count[1] += heiskort_count[i];
+            } else if (heiskort_labels[i].toLowerCase().includes("sesongkort")) {
+                card_type_count[2] += heiskort_count[i];
+            } else {
+                console.log('ikke dagskort, ukeskort, sesongkort');
+            }
+        };
+
+        new_data_set = {
+            label: "Heiskort solgt",
+            data: card_type_count,
+            backgroundColor: ["#ff0000", "#0000ff", "#02d370"]
+        };
+        heiskortChart.data.labels = card_type_labels;
+        heiskortChart.data.datasets = [];
+        heiskortChart.data.datasets[0] = new_data_set;
+        heiskortChart.update();
+        return new_data_set;
+    };
+
+    function endreTilNullGrupper() {
+        new_data_set = {
+            label: "Heiskort solgt",
+            data: heiskort_count,
+            backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"]
+        };
+        heiskortChart.data.labels = heiskort_labels;
+        heiskortChart.data.datasets = [];
+        heiskortChart.data.datasets[0] = new_data_set;
+        heiskortChart.update();
+        return new_data_set;
+    };
+</script>
+{% endblock scripts %}

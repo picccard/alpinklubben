@@ -1,0 +1,83 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="content-section">
+    <legend class="border-bottom">{{ title }}</legend>
+
+    <div class="accordion mb-3" id="accordionExample">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Voksne
+                    </button>
+                </h5>
+            </div>
+
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                <div class="card-body">
+                    Her er kropp 1
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingTwo">
+                <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Barn
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                <div class="card-body">
+                    Her er kropp 2
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {% if heiskort %}
+    {% for kort in heiskort %}
+    {% if loop.index0 % 3 == 0 %}
+    <div class="card-group">
+        {% endif %}
+        <div class="card mb-3 text-center">
+            <div class="card-header">
+                {{ kort.age }}
+            </div>
+            <img class="card-img-top" src="{{ url_for('static', filename=('imgs/'+kort.image)) }}" alt="Skipakke bilde">
+            <div class="card-body">
+                <h5 class="card-title">{{ kort.type }}</h5>
+                <p class="card-text">Gjelder for stor og lite bakke. Noen løyper i stor bakke har aldersgrense 12 år.</p>
+                <a href="{{ url_for('order_heiskort', card_type=kort.type, card_age=kort.age) }}" class="btn btn-dark">Bestill</a>
+            </div>
+            <div class="card-footer">
+                {{ kort.price }}kr<br>
+                <small>Få igjen! 241 solgte</small>
+                <!-- <small class="text-muted">Få igjen! 241 solgte</small> -->
+            </div>
+        </div>
+        {% if loop.index0 % 3 == 2 or loop.last %}
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+
+
+
+
+
+</div>
+{% endblock content %}
+{% block sidebar2 %}
+<div class="content-section">
+    <h2>Notes:</h2>
+    Kan fjerne teksten over(f.eks. dagskort)
+    og under(f.eks. få igjen!) eller erstatte de med annet innhold/statistikk.
+    Kan ha ulike biler.
+    Kan legge 'kortene' inn under voksen/barn kategoriene over.
+    Gir 10% rabatt fra og med heiskort nr3.
+    må selfølgelig endres da det ikke tar hensyn til hva slagt type kort, voksen/barn, år/gyldighet, etc.
+    Pris betalt for heiskort lagres ikke i noen database for øyeblikket.
+</div>
+{% endblock sidebar2 %}

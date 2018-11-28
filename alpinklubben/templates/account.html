@@ -1,0 +1,122 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<div class="content-section">
+
+    <div class="media">
+        <img class="rounded-circle account-img" src="{{ image_file }}">
+        <div class="media-body">
+            <h2 class="account-heading">{{ form.username.data }}</h2>
+            <p class="text-secondary">{{ form.email.data }}</p>
+        </div>
+        {% if update_btn %}
+        <div>
+            <a class="btn btn-secondary btn mt-1 mb-1" href="{{ url_for('update_account') }}">Rediger</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <form method="post" action="" novalidate enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <fieldset class="from-group">
+            <legend class="border-bottom bm-4">Konto Detaljer</legend>
+            <div class="form-group">
+                {{ form.username.label(class="form-control-label") }}
+                {% if form.username.errors %}
+                {{ form.username(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.username.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.username(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.email.label(class="form-control-label") }}
+                {% if form.email.errors %}
+                {{ form.email(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.email.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.email(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+            {% if (bought_heiskort or rented_skipakker) %}
+            <div class="form-group">
+                <label class="form-control-label" for="email">Bestillinger</label>
+
+                <div class="accordion mb-3" id="accordionExample">
+                    {% if bought_heiskort %}
+                    <div class="card">
+                        <div class="card-header collapsed bestillingHead" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" id="headingOne">
+                            Heiskort <span class="fa fa-ellipsis-h float-right"></span>
+                        </div>
+                        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                            <div class="card-body">
+                                <ul>
+                                    {% for kort in bought_heiskort %}
+                                    <li>
+                                        <a href="#">{{ kort.id }}</a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if rented_skipakker %}
+                    <div class="card">
+                        <div class="card-header collapsed bestillingHead" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" id="headingTwo">
+                            Skipakker <span class="fa fa-ellipsis-h float-right"></span>
+                        </div>
+                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                            <div class="card-body">
+                                <ul>
+                                    {% for skipakke in rented_skipakker %}
+                                    <li>
+                                        <a href="#">{{ skipakke.id }}</a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if form.picture %}
+            <div class="form-group">
+                {{ form.picture.label() }}
+                {{ form.picture(class="form-control-file") }}
+                {% if form.picture.errors %}
+                {% for error in form.picture.errors %}
+                <span class="text-danger">{{ error }}</span><br>
+                {% endfor %}
+                {% endif %}
+            </div>
+            {% endif %}
+        </fieldset>
+        {% if form.submit %}
+        <div class="form-group">
+            {{ form.submit(class="btn btn-success") }}
+        </div>
+        {% endif %}
+    </form>
+
+</div>
+{% endblock content %}
+{% block sidebar2 %}
+<div class="content-section">
+    <h2>Notes:</h2>
+    <p>Linkene kan føre til f.eks. kvittering/kjøpsbevis.</p>
+</div>
+{% endblock sidebar2 %}
